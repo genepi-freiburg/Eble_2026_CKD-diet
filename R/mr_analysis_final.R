@@ -32,6 +32,20 @@ set.seed(42)
 proc <- "data/processed/"
 fig  <- "figures/"
 
+# ── Portable gzip reader ──────────────────────────────────────────────
+# Reads a .gz file directly via data.table::fread, which decompresses
+# internally and therefore works on Linux, macOS AND Windows (no external
+# 'zcat' required). fread's gzip support depends on the R.utils package.
+if (!requireNamespace("R.utils", quietly = TRUE)) {
+  install.packages("R.utils", repos = "https://cloud.r-project.org", quiet = TRUE)
+}
+read_gz <- function(path, ...) {
+  if (!file.exists(path)) stop(
+    "File not found: ", path,
+    "\nRun the download script first: bash scripts/01_download_gwas_data.sh")
+  data.table::fread(path, data.table = FALSE, showProgress = FALSE, ...)
+}
+
 TOKEN <- Sys.getenv("OPENGWAS_JWT")
 if (nchar(TOKEN) < 50) stop(
   "OPENGWAS_JWT not set. Visit https://api.opengwas.io to obtain a token.\n",
@@ -187,8 +201,9 @@ write.csv(instr_clean, paste0(proc,"instruments_postphewas.csv"), row.names=FALS
 # STEP 4: Harmonise with CKDGen outcomes
 # ─────────────────────────────────────────────────────────────
 cat("\nStep 3: Harmonising with CKDGen outcomes...\n")
-egfr_raw <- fread("zcat data/raw/egfr_EA.txt.gz", data.table=FALSE, showProgress=FALSE)
-ckd_raw  <- fread("zcat data/raw/ckd_EA.txt.gz",  data.table=FALSE, showProgress=FALSE)
+# read_gz reads .gz directly (no external zcat needed -> works on Windows too)
+egfr_raw <- read_gz("data/raw/egfr_EA.txt.gz")
+ckd_raw  <- read_gz("data/raw/ckd_EA.txt.gz")
 
 extract_out <- function(gwas, snps, outname) {
   gwas %>% filter(RSID %in% snps) %>%
@@ -367,8 +382,7 @@ print(fstat_df[, c("exposure", "conditional_F", "above_threshold")])
 # STEP 7: FinnGen R12 replication
 # ─────────────────────────────────────────────────────────────
 cat("Step 6: FinnGen R12 replication...\n")
-fg12 <- fread("zcat data/raw/finngen/finngen_R12_N14_CHRONKIDNEYDIS.gz",
-              data.table=FALSE, showProgress=FALSE,
+fg12 <- read_gz("data/raw/finngen/finngen_R12_N14_CHRONKIDNEYDIS.gz",
               select=c("#chrom","pos","rsids","ref","alt","pval","beta","sebeta","af_alt"))
 names(fg12)[1]<-"chrom"; fg12$rsid<-sub(",.*","",fg12$rsids)
 fg12 <- fg12 %>% filter(rsid %in% snps_c) %>%
