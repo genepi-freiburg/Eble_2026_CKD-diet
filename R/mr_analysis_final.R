@@ -96,10 +96,10 @@ cat("Raw instruments:", nrow(instr_raw), "SNPs across",
 # (eGFR excluded: circular — cannot distinguish causal instruments
 #  from pleiotropic SNPs when eGFR is also the primary outcome)
 CONFOUNDER_GWAS_R1 <- c(
-  "ieu-a-302",   # Triglycerides (Willer GLGC 2013)
-  "ieu-a-2",     # BMI (Locke GIANT 2015)
-  "ieu-a-26",    # Type 2 diabetes (Morris DIAGRAM 2012)
-  "ieu-b-38"     # Systolic blood pressure (Evangelou 2018)
+  "ieu-a-302",   # Triglycerides
+  "ieu-a-2",     # BMI
+  "ieu-a-26",    # Type 2 diabetes
+  "ieu-b-38"     # Systolic blood pressure
 )
 PLEIOTROPY_P <- 1e-5
 
