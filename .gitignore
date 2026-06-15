@@ -1,0 +1,26 @@
+# Raw GWAS summary statistics — large files, download via scripts/01_download_gwas_data.sh
+data/raw/*.gz
+data/raw/*.txt
+data/raw/*.txt.gz
+data/raw/finngen/*.gz
+
+# Local environment variables — never commit
+.env
+
+# R session artifacts
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# Python
+__pycache__/
+*.pyc
+
+# Generated figures (regenerated via scripts/)
+figures/
+
+# OS
+.DS_Store
+Thumbs.db
+!figures/.gitkeep

@@ -1,0 +1,7 @@
+"exposure","conditional_F","above_threshold","Q_stat","Q_pval"
+"Fresh fruit intake",12.94,TRUE,0,1
+"Processed meat intake",4.05,FALSE,0,1
+"Oily fish intake",14.56,TRUE,0,1
+"Cooked vegetable intake",3.1,FALSE,0,1
+"Salad/raw vegetable intake",4.02,FALSE,0,1
+"Beef intake",3.17,FALSE,0,1
