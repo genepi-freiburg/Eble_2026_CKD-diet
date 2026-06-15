@@ -686,4 +686,5 @@ write.csv(t4, paste0(proc,"Table4_mvmr.csv"),              row.names=FALSE)
 write.csv(t5, paste0(proc,"Table5_FinnGen_replication.csv"),row.names=FALSE)
 
 cat("\n=== ANALYSIS COMPLETE ===\n")
-cat("Run R/generate_figures.R to produce Figures 1-7 and Supplementary Figure S2.\n")
+cat("All primary result tables written to data/processed/.\n")
+cat("To regenerate figures, run the scripts in scripts/ (see README.md).\n")

@@ -13,7 +13,9 @@ suppressPackageStartupMessages({
 })
 
 TOKEN <- Sys.getenv("OPENGWAS_JWT")  # Set via: Sys.setenv(OPENGWAS_JWT = "your_token")
-Sys.setenv(OPENGWAS_JWT = TOKEN)
+if (nchar(TOKEN) < 50) stop(
+  "OPENGWAS_JWT not set. Visit https://api.opengwas.io to obtain a token.\n",
+  "Set it with: Sys.setenv(OPENGWAS_JWT = 'your_token')")
 
 set.seed(42)
 OUT_DIR <- "analysis/mragent_validation/results"
