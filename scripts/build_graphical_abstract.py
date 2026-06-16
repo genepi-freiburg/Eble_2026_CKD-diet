@@ -89,20 +89,10 @@ def text(x, y, s, *, size=10, weight="normal", color=C_TEXT,
             ha=ha, va=va, fontstyle=style, zorder=zorder)
 
 # =============================================================================
-# 1) Title
+# 1) Two-column header: Exposure | Outcome  (title block removed)
 # =============================================================================
-text(50, 97.8,
-     "Causal Effects of Dietary Components on Kidney Function",
-     size=16.5, weight="bold")
-text(50, 95.8,
-     "Two-Sample Mendelian Randomization · Study Flowchart",
-     size=11.0, style="italic", color="#333333")
-
-# =============================================================================
-# 2) Two-column header: Exposure | Outcome
-# =============================================================================
-HDR_TOP  = 94.0
-HDR_BOT  = 76.0   # taller boxes (height 18) for 6 body lines + title
+HDR_TOP  = 98.0
+HDR_BOT  = 80.0   # taller boxes (height 18) for 6 body lines + title
 GAP_COL  = 3.0
 COL_W    = (100 - 2*4 - GAP_COL) / 2   # margins 4 on each side
 LX = 4
