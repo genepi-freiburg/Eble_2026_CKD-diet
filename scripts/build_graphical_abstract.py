@@ -11,7 +11,8 @@ Layout (top -> bottom):
   5. Discovery block with three sub-pipelines:
        (1) Univariable MR  (2) Multivariable MR  (3) GI-PRAL composite
   6. Sensitivity-analyses block (pleiotropy/robustness, eGFRcys, GI-PRAL LOO)
-  7. Validation bar: FinnGen R12 replication
+  7. G-EE appraisal block (per-exposure evaluation across 4 dimensions)
+  8. Validation bar: FinnGen R12 validation
 
 Outputs:
   figures/graphical_abstract.png  (300 dpi)
@@ -44,19 +45,22 @@ C_SENS_DARK   = "#8E4A2F"   # sensitivity terracotta
 C_SENS_LIGHT  = "#F4E1D6"
 C_VAL_DARK    = "#D4791F"   # validation orange
 C_VAL_LIGHT   = "#FBE6CE"
+C_GEE_DARK    = "#2F6E8E"   # G-EE appraisal steel-blue
+C_GEE_LIGHT   = "#DCE9F0"
 C_TEXT        = "#1A1A1A"
 C_TEXT_LIGHT  = "#FFFFFF"
 C_ARROW       = "#3A3A3A"
 
 # --- Canvas -------------------------------------------------------------------
-FIG_W, FIG_H = 8.5, 18.0
+FIG_W, FIG_H = 8.5, 20.5
+Y_MIN = -14            # extra headroom below y=0 for the lower blocks
 fig, ax = plt.subplots(figsize=(FIG_W, FIG_H))
 ax.set_xlim(0, 100)
-ax.set_ylim(0, 100)
+ax.set_ylim(Y_MIN, 100)
 ax.set_aspect("auto")
 ax.axis("off")
 # Background
-ax.add_patch(Rectangle((0, 0), 100, 100, facecolor=C_BG, zorder=-10))
+ax.add_patch(Rectangle((0, Y_MIN), 100, 100 - Y_MIN, facecolor=C_BG, zorder=-10))
 
 # --- Helpers ------------------------------------------------------------------
 def rbox(x, y, w, h, *, fc, ec=None, lw=1.0, rounding=1.4, zorder=1):
@@ -141,7 +145,7 @@ out_lines = [
     "eGFRcrea  (N = 567,460)",
     "CKD       (N = 480,698)",
     "",
-    "Replication: FinnGen R12",
+    "Validation: FinnGen R12",
     "N = 493,235  (12,787 cases)",
 ]
 for i, line in enumerate(out_lines):
@@ -291,7 +295,7 @@ sub_panel(
 # 6) Sensitivity Analyses block
 # =============================================================================
 SENS_TOP  = DISC_BOT - 2.0     # ~ 27.0
-SENS_BOT  = 6.5
+SENS_BOT  = 10.0
 SENS_X    = 4
 SENS_W    = 92
 SENS_H    = SENS_TOP - SENS_BOT
@@ -321,10 +325,10 @@ def sens_panel(i, title, body_lines):
     x = sens_x[i]
     rbox(x, SENS_SUB_BOT, SENS_SUB_W, SENS_SUB_H,
          fc=C_SENS_LIGHT, ec="#B97B5C", lw=0.9, rounding=1.2)
-    text(x + SENS_SUB_W/2, SENS_SUB_TOP - 1.6, title,
+    text(x + SENS_SUB_W/2, SENS_SUB_TOP - 1.5, title,
          size=9.6, weight="bold")
     for j, bl in enumerate(body_lines):
-        text(x + 2.0, SENS_SUB_TOP - 3.4 - 1.55*j, bl,
+        text(x + 2.0, SENS_SUB_TOP - 3.2 - 1.45*j, bl,
              size=8.0, ha="left", va="top")
 
 sens_panel(
@@ -335,9 +339,7 @@ sens_panel(
         "• MR-Egger  (+ intercept test)",
         "• Cochran's Q  (heterogeneity)",
         "• Steiger filtering",
-        "  (3 SNP–exposure pairs removed)",
-        "• Leave-one-out  (Tea, Salad,",
-        "  Dried fruit)  ×  eGFR & CKD",
+        "• Leave-one-out  ×  eGFR & CKD",
     ],
 )
 sens_panel(
@@ -346,19 +348,68 @@ sens_panel(
     [
         "• eGFRcys  (Pattaro 2016)",
         "  ieu-a-1106,  N = 33,152",
-        "  116 / 264 SNPs;  all P > 0.20",
-        "",
         "• GI-PRAL leave-one-out",
-        "  Full:  β = −0.324,  P = 0.032",
-        "  w/o Pork:  β = −0.179,  P = 0.132",
+        "  composite dietary acid load",
+        "  (each food removed in turn)",
     ],
 )
 
 # =============================================================================
-# 7) Validation bar
+# 7) G-EE appraisal block (methodology only — no per-exposure ratings shown)
 # =============================================================================
-VAL_TOP = 5.5
-VAL_BOT = 0.5
+GEE_TOP = SENS_BOT - 2.0       # ~ 9.0
+GEE_BOT = -3.0
+GEE_X   = 4
+GEE_W   = 92
+GEE_H   = GEE_TOP - GEE_BOT
+
+# Outer container
+rbox(GEE_X, GEE_BOT, GEE_W, GEE_H,
+     fc=C_GEE_LIGHT, ec=C_GEE_DARK, lw=1.6, rounding=1.4)
+# Dark header strip
+rbox(GEE_X, GEE_TOP - 2.6, GEE_W, 2.6,
+     fc=C_GEE_DARK, ec=C_GEE_DARK, rounding=1.0)
+text(50, GEE_TOP - 1.3,
+     "G–EE APPRAISAL  ·  each of the 10 exposures evaluated across 4 dimensions",
+     size=10.0, weight="bold", color=C_TEXT_LIGHT)
+
+# Arrow from Sensitivity into G-EE
+arrow(50, SENS_BOT - 0.3, 50, GEE_TOP + 0.3,
+      color=C_GEE_DARK, lw=2.0, mscale=20)
+
+# Four dimension cards (D1..D4), methodology labels only
+gee_dims = [
+    ("D1", "Mechanism", "of the lead loci"),
+    ("D2", "Life-course", "timing of effect"),
+    ("D3", "Dose-response", "plausibility"),
+    ("D4", "Tissue / cell-type", "location of effect"),
+]
+GEE_PAD  = 2.0
+GEE_CARD_TOP = GEE_TOP - 2.6 - GEE_PAD
+GEE_CARD_BOT = GEE_BOT + GEE_PAD
+GEE_CARD_W   = (GEE_W - 5*GEE_PAD) / 4
+GEE_CARD_H   = GEE_CARD_TOP - GEE_CARD_BOT
+gee_card_x = [GEE_X + GEE_PAD + i*(GEE_CARD_W + GEE_PAD) for i in range(4)]
+
+for i, (tag, l1, l2) in enumerate(gee_dims):
+    x = gee_card_x[i]
+    rbox(x, GEE_CARD_BOT, GEE_CARD_W, GEE_CARD_H,
+         fc="#FFFFFF", ec=C_GEE_DARK, lw=0.9, rounding=1.1)
+    # dimension badge
+    ax.add_patch(plt.Circle((x + GEE_CARD_W/2, GEE_CARD_TOP - 1.5), 1.15,
+                            facecolor=C_GEE_DARK, edgecolor=C_GEE_DARK, zorder=4))
+    text(x + GEE_CARD_W/2, GEE_CARD_TOP - 1.5, tag,
+         size=8.2, weight="bold", color=C_TEXT_LIGHT, zorder=5)
+    text(x + GEE_CARD_W/2, GEE_CARD_TOP - 3.6, l1,
+         size=8.4, weight="bold")
+    text(x + GEE_CARD_W/2, GEE_CARD_TOP - 4.9, l2,
+         size=7.8, color="#333333")
+
+# =============================================================================
+# 8) Validation bar
+# =============================================================================
+VAL_TOP = -5.0
+VAL_BOT = -11.0
 VAL_X   = 4
 VAL_W   = 92
 rbox(VAL_X, VAL_BOT, VAL_W, VAL_TOP - VAL_BOT,
@@ -367,16 +418,16 @@ rbox(VAL_X, VAL_BOT, VAL_W, VAL_TOP - VAL_BOT,
 rbox(VAL_X, VAL_TOP - 3.0, VAL_W, 3.0,
      fc=C_VAL_DARK, ec=C_VAL_DARK, rounding=1.0)
 text(50, VAL_TOP - 1.5,
-     "VALIDATION — FinnGen R12 Replication",
+     "VALIDATION — FinnGen R12 Validation",
      size=11.5, weight="bold", color=C_TEXT_LIGHT)
 
 text(50, VAL_TOP - 3.5,
      "Same IVW + sensitivity pipeline applied independently  ·  "
-     "Replicated = FDR < 0.05 AND directionally consistent",
+     "Validated = FDR < 0.05 AND directionally consistent",
      size=8.4, ha="center")
 
-# Arrow from Sensitivity into Validation
-arrow(50, SENS_BOT - 0.3, 50, VAL_TOP + 0.3,
+# Arrow from G-EE appraisal into Validation
+arrow(50, GEE_BOT - 0.3, 50, VAL_TOP + 0.3,
       color=C_VAL_DARK, lw=2.0, mscale=20)
 
 # (Footer note removed — folded into validation strip above)
